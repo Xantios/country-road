@@ -1,42 +1,51 @@
 const express = require('express');
-const morgan = require("morgan");
+const morgan = require('morgan');
 const chalk = require('chalk');
 const path = require('path');
 const fs = require('fs');
 
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const routeTable = require('./routeTable');
 
 // Create Express Server
 const app = express();
 
 // Config
 const config = JSON.parse(fs.readFileSync('./config.json'));
-
 const PORT = config.port;
 const HOST = config.host;
 
-const API_SERVICE_URL = "http://jsonplaceholder.typicode.com";
+// Route Table 
+let routing = routeTable(config);
 
 // Setup logging
 app.use(morgan('dev'));
 
-app.get('/route-table',(req,res,next) => {
-    res.send("This is a proxy, please checkout readme.md");
-});
+// Output route table
+if(config.showRouteMap) 
+    app.get('/route-table',(req,res,next) => res.send(routing));
 
-Object.keys(config.hostMap).forEach(name => {
-    console.log('⚙️  '+chalk.blue('Setting up "'+name+'"'));
-    const item = config.hostMap[name];
-    console.log(item);
-});
+routing.forEach(item => {
 
+    if(item.type=="url-proxy") {
+        app.use(item.source,createProxyMiddleware({
+            target: item.target,
+            changeOrigin: item.changeOrigin,
+            pathRewrite: {
+                [item.pathRewrite]: ''
+            }
+        }));
+    }
+
+    if(item.type == "static-file-proxy") {
+        app.use(item.source,express.static(item.target));
+    }
+
+});
 
 // Authorization
 /*
-app.use('', (req, res, next) => {
-    if (req.headers.authorization) { next();
-    } else {res.sendStatus(403); }
- });*/
+app.use('', (req, res, next) => { if (req.headers.authorization) { next(); } else {res.sendStatus(403); } });*/
 
  // Proxy 
  /*app.use('/json_placeholder', createProxyMiddleware({
