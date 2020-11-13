@@ -1,0 +1,19 @@
+{
+    "port": 8102,
+    "host": "0.0.0.0",
+    "showRouteMap": true,
+    "hostMap": {
+        "json-api": {
+            "source": "/api",
+            "destination": "http://jsonplaceholder.typicode.com"
+        },
+        "rel-static": {
+            "source": "/file",
+            "destination": "^/assets/"
+        },
+        "rel-absolute": {
+            "source": "/home",
+            "destination": "~/"
+        }
+    }
+}

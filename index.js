@@ -38,6 +38,7 @@ routing.forEach(item => {
     }
 
     if(item.type == "static-file-proxy") {
+        console.log("📂 "+chalk.blue(`Serving files at ${item.source} from ${item.target}`));
         app.use(item.source,express.static(item.target));
     }
 

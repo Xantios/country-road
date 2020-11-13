@@ -5,7 +5,7 @@ const fs = require('fs');
 module.exports = function(_string) {
 
     if(_string.includes('@')) {
-        return _string.replace('^',path.parse(__dirname).dir);
+        return _string.replace('@',path.parse(__dirname).dir);
     }
 
     if(_string.includes('~')) {
